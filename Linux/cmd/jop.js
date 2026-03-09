@@ -2,7 +2,7 @@ const { getUser, updateUser } = require('../data/user');
 const { styleNum } = require('../tools')
 
 const COOLDOWN_TIME = 30 * 60 * 1000; 
-const SEP = "⊱━━━━━━━━━━━━━━━⊰ 🦋 ⊱━━━━━━━━━━━━━━━⊰";
+const SEP = "⎔───────㊙︎─────⎔";
 const BUTTERFLY = "🦋";
 
 const JOBS = {
