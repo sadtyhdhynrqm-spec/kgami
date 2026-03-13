@@ -15,44 +15,49 @@ module.exports = {
       const { senderID, threadID, messageID } = event;
       const userRank = getUserRank(senderID, config);
       
-      // تصفية الأوامر: المطور يرى كل شيء، المستخدم يرى رتبته فقط
       const availableCommands = (allCommands || []).filter(cmd => {
         if (userRank >= 2) return cmd.name !== 'اوامر'; 
         return cmd.rank <= userRank && cmd.hide === false && cmd.name !== 'اوامر';
       });
 
       if (availableCommands.length === 0) {
-        return api.sendMessage(`⦿───── ✾ ⌬ ✾ ─────⦿\n✾ ┇ لا توجد أوامر متاحة حالياً.\n●───── ✾ ⌬ ✾ ─────●`, threadID, messageID);
+        return api.sendMessage(`⏣────── ✾ ⌬ ✾ ──────⏣\n✾ ┇ لا توجد أوامر متاحة.\n●────── ✾ ⌬ ✾ ──────●`, threadID, messageID);
       }
       
       const totalCommands = availableCommands.length;
 
-      // تقسيم كل الأوامر المتاحة إلى فئات
       const categories = {};
       availableCommands.forEach(cmd => {
-        const cat = cmd.category || "أخرى";
+        const cat = cmd.category || "الألعاب";
         if (!categories[cat]) categories[cat] = [];
         categories[cat].push(cmd.name);
       });
 
       let finalCommands = "";
-      for (const cat in categories) {
-        finalCommands += `✾ ┇ ⦿ ⟬ ${cat} ⟭\n`;
+      const catKeys = Object.keys(categories);
+
+      catKeys.forEach((cat, index) => {
+        finalCommands += `✾ ┇\n✾ ┇ ⏣ ⟬ قـسـم ${cat} ⟭\n`;
         const cmds = categories[cat];
+        
         // عرض الأوامر بنظام 3 في كل سطر
         for (let i = 0; i < cmds.length; i += 3) {
-          finalCommands += `✾ ┇  ${cmds.slice(i, i + 3).join(' ⦿ ')}\n`;
+          const row = cmds.slice(i, i + 3).join(' ◍ ');
+          finalCommands += `✾ ┇ ◍ ${row}\n`;
         }
-        finalCommands += `✾ ┇ ╼╼╼╼╼╼╼╼╼╼╼╼╼\n`;
-      }
 
-      const messageText = `⦿───── ✾ ⌬ ✾ ─────⦿
-✾ ┇ ⦿ ⟬ ${styleText('𝒆𝒑𝒍𝒊𝒏 𝒃𝒐𝒕')} ⟭
-●───── ✾ ⌬ ✾ ─────●
+        // إضافة الفاصل الممتد بين الأقسام
+        if (index !== catKeys.length - 1) {
+          finalCommands += `✾ ┇ ⸻⸻⸻⸻⸻\n`;
+        }
+      });
+
+      const messageText = `●────── ✾ ⌬ ✾ ──────●
 ${finalCommands}
-✾ ┇ . ${styleText('استمتع بل بوت')} : ${styleNum(totalCommands)}
-✾ ┇ . ${styleText('🇯🇵')} : ${userRank >= 2 ? styleText('Developer') : styleText('User')}
-●───── ✾ ⌬ ✾ ─────●`;
+✾ ┇
+⏣────── ✾ ⌬ ✾ ──────⏣
+ ⠇عـدد الأوامـر: ${styleNum(totalCommands)}
+ ⠇الـمـطـوࢪ: سينكو 𓆩☆𓆪`;
       
       api.sendMessage(messageText, threadID, messageID);
     } catch (err) {
